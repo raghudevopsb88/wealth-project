@@ -10,7 +10,11 @@ Frontend is the web application for the Wealth Management Platform. It is built 
 
 ## Install Nginx
 
+By default Nginx available in RHEL 9 may not be version 1.26. We need to enable the 1.26 module and install it.
+
 ```shell
+dnf module disable nginx -y
+dnf module enable nginx:1.26 -y
 dnf install -y nginx
 ```
 
