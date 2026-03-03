@@ -93,7 +93,7 @@ ExecStart=/usr/local/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --worke
 Restart=on-failure
 RestartSec=10
 
-Environment=DATABASE_URL=postgresql+asyncpg://analytics_svc_user:localdev123@<POSTGRESQL-SERVER-IP>:5432/wmp
+Environment=DATABASE_URL=postgresql+asyncpg://analytics_svc_user:localdev123@localhost:5432/wmp
 Environment=DB_SCHEMA=analytics_schema
 Environment=LOG_LEVEL=INFO
 Environment=ENVIRONMENT=production
@@ -103,7 +103,7 @@ WantedBy=multi-user.target
 ```
 
 > **Important**
-> Replace `<POSTGRESQL-SERVER-IP>` with the **private IP address** of your PostgreSQL server.
+> Replace `localhost` with the **private IP address** of your PostgreSQL server.
 >
 > Note the `DATABASE_URL` format uses `postgresql+asyncpg://` as the scheme because FastAPI uses async database drivers.
 

@@ -217,5 +217,5 @@ You should see the three schemas listed: `auth_schema`, `analytics_schema`, `por
 Test remote connectivity from another server (e.g., the Portfolio server).
 
 ```shell
-psql -h <POSTGRESQL-SERVER-IP> -U portfolio_svc_user -d wmp -c "SELECT current_schema();"
+psql -h localhost -U portfolio_svc_user -d wmp -c "SELECT current_schema();"
 ```

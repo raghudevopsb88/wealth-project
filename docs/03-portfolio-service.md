@@ -95,7 +95,7 @@ Restart=on-failure
 RestartSec=10
 
 Environment=SPRING_PROFILES_ACTIVE=production
-Environment=SPRING_DATASOURCE_URL=jdbc:postgresql://<POSTGRESQL-SERVER-IP>:5432/wmp?currentSchema=portfolio_schema
+Environment=SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/wmp?currentSchema=portfolio_schema
 Environment=SPRING_DATASOURCE_USERNAME=portfolio_svc_user
 Environment=SPRING_DATASOURCE_PASSWORD=localdev123
 Environment=JWT_SECRET=myDefaultSuperSecretKeyThatIsAtLeast256BitsLongForHS256Algorithm
@@ -106,7 +106,7 @@ WantedBy=multi-user.target
 ```
 
 > **Important**
-> Replace `<POSTGRESQL-SERVER-IP>` with the **private IP address** of your PostgreSQL server.
+> Replace `localhost` with the **private IP address** of your PostgreSQL server.
 
 Load the service.
 

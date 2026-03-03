@@ -132,7 +132,7 @@ http {
 
         # Auth Service
         location /api/v1/auth/ {
-            proxy_pass http://<AUTH-SERVER-IP>:8081;
+            proxy_pass http://localhost:8081;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -141,7 +141,7 @@ http {
 
         # Portfolio Service
         location /api/v1/users/ {
-            proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
+            proxy_pass http://localhost:8080;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -149,7 +149,7 @@ http {
         }
 
         location /api/v1/portfolios/ {
-            proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
+            proxy_pass http://localhost:8080;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -157,7 +157,7 @@ http {
         }
 
         location /api/v1/holdings/ {
-            proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
+            proxy_pass http://localhost:8080;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -166,7 +166,7 @@ http {
 
         # Analytics Service
         location /api/v1/market-data/ {
-            proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
+            proxy_pass http://localhost:8000;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -174,7 +174,7 @@ http {
         }
 
         location /api/v1/valuations/ {
-            proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
+            proxy_pass http://localhost:8000;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -182,7 +182,7 @@ http {
         }
 
         location /api/v1/analytics/ {
-            proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
+            proxy_pass http://localhost:8000;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -216,9 +216,9 @@ http {
 
 > **Important**
 > Replace the following placeholders with **private IP addresses** of the backend servers:
-> - `<AUTH-SERVER-IP>` — Auth Service server
-> - `<PORTFOLIO-SERVER-IP>` — Portfolio Service server
-> - `<ANALYTICS-SERVER-IP>` — Analytics Service server
+> - `localhost` — Auth Service server
+> - `localhost` — Portfolio Service server
+> - `localhost` — Analytics Service server
 
 Remove the default Nginx server config to avoid conflicts.
 

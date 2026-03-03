@@ -83,7 +83,7 @@ ExecStart=/opt/auth-service/auth-service
 Restart=on-failure
 RestartSec=10
 
-Environment=DB_HOST=<POSTGRESQL-SERVER-IP>
+Environment=DB_HOST=localhost
 Environment=DB_PORT=5432
 Environment=DB_USER=auth_svc_user
 Environment=DB_PASSWORD=localdev123
@@ -91,7 +91,7 @@ Environment=DB_NAME=wmp
 Environment=DB_SCHEMA=auth_schema
 Environment=SERVER_PORT=8081
 Environment=JWT_SECRET=myDefaultSuperSecretKeyThatIsAtLeast256BitsLongForHS256Algorithm
-Environment=PORTFOLIO_SERVICE_URL=http://<PORTFOLIO-SERVER-IP>:8080
+Environment=PORTFOLIO_SERVICE_URL=http://localhost:8080
 
 [Install]
 WantedBy=multi-user.target
@@ -99,8 +99,8 @@ WantedBy=multi-user.target
 
 > **Important**
 > Replace the following placeholders:
-> - `<POSTGRESQL-SERVER-IP>` — Private IP of the PostgreSQL server
-> - `<PORTFOLIO-SERVER-IP>` — Private IP of the Portfolio Service server
+> - `localhost` — Private IP of the PostgreSQL server
+> - `localhost` — Private IP of the Portfolio Service server
 >
 > The `JWT_SECRET` must be the **same value** used in Portfolio Service for token validation to work across services.
 
