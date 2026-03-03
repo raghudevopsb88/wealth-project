@@ -84,7 +84,7 @@ cp -r /tmp/frontend/dist/* /usr/share/nginx/html/
 
 ## Configure Nginx
 
-The default `nginx.conf` on RHEL 9 has an embedded server block that will conflict with our configuration. We need to replace it with a clean version.
+The default `nginx.conf` on RHEL 9 has an embedded server block that will conflict with our configuration. We need to replace the entire file with our own configuration that includes the reverse proxy setup.
 
 > **Important**
 > **Do NOT try to edit the default `nginx.conf` to remove the server block — it has nested braces that are difficult to handle. Replace the entire file instead.**
@@ -124,113 +124,93 @@ http {
     include             /etc/nginx/mime.types;
     default_type        application/octet-stream;
 
-    # Load all server blocks from conf.d
-    include /etc/nginx/conf.d/*.conf;
-}
-```
+    server {
+        listen 80;
+        server_name _;
+        root /usr/share/nginx/html;
+        index index.html;
 
-> **Note**
-> This clean config has **no server block** — all server blocks come from files in `/etc/nginx/conf.d/`. This is the standard practice for managing multiple sites.
+        # Auth Service
+        location /api/v1/auth/ {
+            proxy_pass http://<AUTH-SERVER-IP>:8081;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
-## Configure Reverse Proxy
+        # Portfolio Service
+        location /api/v1/users/ {
+            proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
-The frontend makes API calls to `/api/v1/...` paths. Nginx needs to proxy these requests to the correct backend service based on the URL path.
+        location /api/v1/portfolios/ {
+            proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
-Create the WMP configuration file.
+        location /api/v1/holdings/ {
+            proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
-```shell
-vim /etc/nginx/conf.d/wmp.conf
-```
+        # Analytics Service
+        location /api/v1/market-data/ {
+            proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
-Add the following content.
+        location /api/v1/valuations/ {
+            proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
-```nginx title=/etc/nginx/conf.d/wmp.conf
-server {
-    listen 80;
-    server_name _;
-    root /usr/share/nginx/html;
-    index index.html;
+        location /api/v1/analytics/ {
+            proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
-    # Auth Service
-    location /api/v1/auth/ {
-        proxy_pass http://<AUTH-SERVER-IP>:8081;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        # SPA fallback — serves index.html for client-side routing
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Cache static assets
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+
+        # Health check
+        location /nginx-health {
+            access_log off;
+            return 200 "OK\n";
+        }
+
+        # Gzip compression
+        gzip on;
+        gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript image/svg+xml;
+        gzip_min_length 256;
     }
-
-    # Portfolio Service
-    location /api/v1/users/ {
-        proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /api/v1/portfolios/ {
-        proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /api/v1/holdings/ {
-        proxy_pass http://<PORTFOLIO-SERVER-IP>:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # Analytics Service
-    location /api/v1/market-data/ {
-        proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /api/v1/valuations/ {
-        proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /api/v1/analytics/ {
-        proxy_pass http://<ANALYTICS-SERVER-IP>:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # SPA fallback — serves index.html for client-side routing
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Cache static assets
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-
-    # Health check
-    location /nginx-health {
-        access_log off;
-        return 200 "OK\n";
-    }
-
-    # Gzip compression
-    gzip on;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript image/svg+xml;
-    gzip_min_length 256;
 }
 ```
 
