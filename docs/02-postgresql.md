@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # 02-PostgreSQL
 
 PostgreSQL is the shared database for the Wealth Management Platform. All three microservices connect to the same PostgreSQL 16 instance but use **separate schemas** for data isolation.
@@ -12,9 +8,8 @@ PostgreSQL is the shared database for the Wealth Management Platform. All three 
 | `portfolio_schema` | Portfolio Service |
 | `analytics_schema` | Analytics Service |
 
-:::tip Hint
-**PostgreSQL 16 is not available in default RHEL 9 repos. We need to add the official PostgreSQL YUM repository first.**
-:::
+> **Hint**
+> **PostgreSQL 16 is not available in default RHEL 9 repos. We need to add the official PostgreSQL YUM repository first.**
 
 ## Install PostgreSQL Repository
 
@@ -28,9 +23,8 @@ Disable the built-in PostgreSQL module to avoid version conflicts.
 dnf -qy module disable postgresql
 ```
 
-:::info
-RHEL 9 ships with an older PostgreSQL version as a module. We must disable it so `dnf` picks up version 16 from the PGDG repo.
-:::
+> **Note**
+> RHEL 9 ships with an older PostgreSQL version as a module. We must disable it so `dnf` picks up version 16 from the PGDG repo.
 
 ## Install PostgreSQL 16
 
@@ -40,9 +34,8 @@ dnf install -y postgresql16-server postgresql16
 
 ## Initialize & Start
 
-:::info
-The `initdb` step creates the initial database cluster. This only needs to be run **once**. If you see "Data directory is not empty", it means it was already initialized.
-:::
+> **Note**
+> The `initdb` step creates the initial database cluster. This only needs to be run **once**. If you see "Data directory is not empty", it means it was already initialized.
 
 ```shell
 /usr/pgsql-16/bin/postgresql-16-setup initdb
@@ -55,9 +48,8 @@ systemctl enable postgresql-16
 systemctl start postgresql-16
 ```
 
-:::caution Important
-Note that the service name is `postgresql-16` (not `postgresql`). The binaries are located at `/usr/pgsql-16/bin/`. This is specific to the PGDG repository.
-:::
+> **Important**
+> Note that the service name is `postgresql-16` (not `postgresql`). The binaries are located at `/usr/pgsql-16/bin/`. This is specific to the PGDG repository.
 
 ## Configure Network Access
 
@@ -75,9 +67,8 @@ Find the `listen_addresses` line and update it.
 listen_addresses = '*'
 ```
 
-:::info
-The config file path is `/var/lib/pgsql/16/data/` (note the `16` in the path). This is the PGDG layout, different from the default RHEL PostgreSQL.
-:::
+> **Note**
+> The config file path is `/var/lib/pgsql/16/data/` (note the `16` in the path). This is the PGDG layout, different from the default RHEL PostgreSQL.
 
 ## Configure Authentication
 
@@ -107,9 +98,8 @@ Change it to:
 local   all             all                                     trust
 ```
 
-:::info
-`md5` means remote clients must provide a password. `trust` for local connections lets us run `psql` as the `postgres` user without a password prompt. In production, restrict `0.0.0.0/0` to your VPC CIDR range.
-:::
+> **Note**
+> `md5` means remote clients must provide a password. `trust` for local connections lets us run `psql` as the `postgres` user without a password prompt. In production, restrict `0.0.0.0/0` to your VPC CIDR range.
 
 Restart PostgreSQL to apply the changes.
 
@@ -125,9 +115,8 @@ Connect to PostgreSQL as the `postgres` superuser.
 sudo -u postgres /usr/pgsql-16/bin/psql
 ```
 
-:::caution Important
-Use the full path `/usr/pgsql-16/bin/psql` — the PGDG version may not be in the default `PATH`.
-:::
+> **Important**
+> Use the full path `/usr/pgsql-16/bin/psql` — the PGDG version may not be in the default `PATH`.
 
 Create the `wmp` database.
 
@@ -144,9 +133,8 @@ CREATE SCHEMA IF NOT EXISTS analytics_schema;
 CREATE SCHEMA IF NOT EXISTS auth_schema;
 ```
 
-:::caution Important
-Replace `localdev123` below with strong passwords in production environments.
-:::
+> **Important**
+> Replace `localdev123` below with strong passwords in production environments.
 
 Create service-specific database users.
 
@@ -191,9 +179,8 @@ GRANT SELECT ON ALL TABLES IN SCHEMA portfolio_schema TO analytics_svc_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA portfolio_schema GRANT SELECT ON TABLES TO analytics_svc_user;
 ```
 
-:::info
-Analytics Service gets **read-only** access to `portfolio_schema` for cross-referencing portfolio data in valuations.
-:::
+> **Note**
+> Analytics Service gets **read-only** access to `portfolio_schema` for cross-referencing portfolio data in valuations.
 
 Grant permissions for **Auth Service** user.
 

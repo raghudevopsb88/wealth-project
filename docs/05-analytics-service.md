@@ -1,18 +1,12 @@
----
-sidebar_position: 6
----
-
 # 05-Analytics Service
 
 Analytics Service provides market data, portfolio valuations, and analytics. It is built with **Python 3.12** and **FastAPI**, using **asyncpg** for async database access.
 
-:::tip Hint
-**Developer has chosen Python 3.12 with FastAPI framework and uvicorn as the ASGI server.**
-:::
+> **Hint**
+> **Developer has chosen Python 3.12 with FastAPI framework and uvicorn as the ASGI server.**
 
-:::caution Dependency
-Analytics Service depends on **PostgreSQL**. Ensure PostgreSQL is set up and running before starting this service.
-:::
+> **Dependency**
+> Analytics Service depends on **PostgreSQL**. Ensure PostgreSQL is set up and running before starting this service.
 
 ## Install Python 3.12
 
@@ -26,9 +20,8 @@ Verify the installation.
 python3.12 --version
 ```
 
-:::info
-We install `python3.12-devel` and `gcc` because some Python packages (like `asyncpg`) need to compile C extensions during installation. Without these, `pip install` will fail.
-:::
+> **Note**
+> We install `python3.12-devel` and `gcc` because some Python packages (like `asyncpg`) need to compile C extensions during installation. Without these, `pip install` will fail.
 
 ## Configure the Application
 
@@ -71,24 +64,21 @@ cd /opt/analytics-service
 pip3.12 install --no-cache-dir .
 ```
 
-:::tip Hint
-**The `pyproject.toml` file defines all the dependencies. `pip install .` reads it and installs everything needed — FastAPI, uvicorn, asyncpg, SQLAlchemy, etc. This step takes a couple of minutes.**
-:::
+> **Hint**
+> **The `pyproject.toml` file defines all the dependencies. `pip install .` reads it and installs everything needed — FastAPI, uvicorn, asyncpg, SQLAlchemy, etc. This step takes a couple of minutes.**
 
-:::caution Troubleshooting
-If you see an error about "Multiple top-level packages discovered in a flat-layout", ensure the `pyproject.toml` contains:
-```toml
-[tool.setuptools.packages.find]
-include = ["app*"]
-```
-This tells setuptools to only package the `app` directory and ignore `migrations/`.
-:::
+> **Troubleshooting**
+> If you see an error about "Multiple top-level packages discovered in a flat-layout", ensure the `pyproject.toml` contains:
+> ```toml
+> [tool.setuptools.packages.find]
+> include = ["app*"]
+> ```
+> This tells setuptools to only package the `app` directory and ignore `migrations/`.
 
 ## Setup SystemD Service
 
-:::info
-You can create this file using **`vim /etc/systemd/system/analytics-service.service`**
-:::
+> **Note**
+> You can create this file using **`vim /etc/systemd/system/analytics-service.service`**
 
 ```ini title=/etc/systemd/system/analytics-service.service
 [Unit]
@@ -112,11 +102,10 @@ Environment=ENVIRONMENT=production
 WantedBy=multi-user.target
 ```
 
-:::caution Important
-Replace `<POSTGRESQL-SERVER-IP>` with the **private IP address** of your PostgreSQL server.
-
-Note the `DATABASE_URL` format uses `postgresql+asyncpg://` as the scheme because FastAPI uses async database drivers.
-:::
+> **Important**
+> Replace `<POSTGRESQL-SERVER-IP>` with the **private IP address** of your PostgreSQL server.
+>
+> Note the `DATABASE_URL` format uses `postgresql+asyncpg://` as the scheme because FastAPI uses async database drivers.
 
 Load the service.
 
@@ -131,15 +120,14 @@ systemctl enable analytics-service
 systemctl start analytics-service
 ```
 
-:::caution Re-deployment Note
-If you are re-deploying, stop the service before updating:
-```shell
-systemctl stop analytics-service
-cp -r /tmp/analytics-service/* /opt/analytics-service/
-pip3.12 install --no-cache-dir .
-systemctl start analytics-service
-```
-:::
+> **Re-deployment Note**
+> If you are re-deploying, stop the service before updating:
+> ```shell
+> systemctl stop analytics-service
+> cp -r /tmp/analytics-service/* /opt/analytics-service/
+> pip3.12 install --no-cache-dir .
+> systemctl start analytics-service
+> ```
 
 ## Verification
 
@@ -167,10 +155,8 @@ Expected response:
 {"status":"healthy"}
 ```
 
-:::tip Hint
-**The `--workers 4` flag runs 4 uvicorn worker processes for handling concurrent requests. Adjust based on your server's CPU cores.**
-:::
+> **Hint**
+> **The `--workers 4` flag runs 4 uvicorn worker processes for handling concurrent requests. Adjust based on your server's CPU cores.**
 
-:::info
-After this service is running, go back to the **Frontend** browser — the dashboard should now show **market data**, **portfolio valuations**, and **analytics charts**. All features of the application should now be fully functional.
-:::
+> **Note**
+> After this service is running, go back to the **Frontend** browser — the dashboard should now show **market data**, **portfolio valuations**, and **analytics charts**. All features of the application should now be fully functional.

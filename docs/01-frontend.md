@@ -1,18 +1,12 @@
----
-sidebar_position: 2
----
-
 # 01-Frontend
 
 Frontend is the web application for the Wealth Management Platform. It is built with **React** and **Vite**, and served by **Nginx** which also acts as a **reverse proxy** to route API requests to the correct backend service.
 
-:::tip Hint
-**Developer has chosen React with Vite as the build tool. Nginx serves the static files and proxies API calls to backend services.**
-:::
+> **Hint**
+> **Developer has chosen React with Vite as the build tool. Nginx serves the static files and proxies API calls to backend services.**
 
-:::info
-We set up Frontend first to demonstrate the problem — the web page will load but nothing will work because the backend services are not running yet. As we set up each backend, features will start working.
-:::
+> **Note**
+> We set up Frontend first to demonstrate the problem — the web page will load but nothing will work because the backend services are not running yet. As we set up each backend, features will start working.
 
 ## Install Nginx
 
@@ -27,17 +21,15 @@ systemctl enable nginx
 systemctl start nginx
 ```
 
-:::info
-Try to access the server IP in the browser and ensure you get the default Nginx page. This confirms Nginx is installed and running correctly.
-:::
+> **Note**
+> Try to access the server IP in the browser and ensure you get the default Nginx page. This confirms Nginx is installed and running correctly.
 
 ## Install Node.js 22
 
 Node.js is required to build the frontend application from source.
 
-:::tip Hint
-**Node.js 22 is not available in default RHEL 9 repos. We need to add the NodeSource repository.**
-:::
+> **Hint**
+> **Node.js 22 is not available in default RHEL 9 repos. We need to add the NodeSource repository.**
 
 ```shell
 curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
@@ -53,9 +45,8 @@ npm --version
 
 ## Download & Build
 
-:::info
-Our application developed by our own developer does not have any RPM package. So we need to configure every step manually.
-:::
+> **Note**
+> Our application developed by our own developer does not have any RPM package. So we need to configure every step manually.
 
 Download the frontend source code to a temporary directory.
 
@@ -75,9 +66,8 @@ npm ci
 npm run build
 ```
 
-:::tip Hint
-**`npm ci` installs exact versions from `package-lock.json` for reproducible builds. `npm run build` produces optimized static files in the `dist/` directory.**
-:::
+> **Hint**
+> **`npm ci` installs exact versions from `package-lock.json` for reproducible builds. `npm run build` produces optimized static files in the `dist/` directory.**
 
 ## Deploy to Nginx
 
@@ -92,9 +82,8 @@ cp -r /tmp/frontend/dist/* /usr/share/nginx/html/
 
 The default `nginx.conf` on RHEL 9 has an embedded server block that will conflict with our configuration. We need to replace it with a clean version.
 
-:::caution Important
-**Do NOT try to edit the default `nginx.conf` to remove the server block — it has nested braces that are difficult to handle. Replace the entire file instead.**
-:::
+> **Important**
+> **Do NOT try to edit the default `nginx.conf` to remove the server block — it has nested braces that are difficult to handle. Replace the entire file instead.**
 
 Replace the main Nginx configuration.
 
@@ -136,9 +125,8 @@ http {
 }
 ```
 
-:::info
-This clean config has **no server block** — all server blocks come from files in `/etc/nginx/conf.d/`. This is the standard practice for managing multiple sites.
-:::
+> **Note**
+> This clean config has **no server block** — all server blocks come from files in `/etc/nginx/conf.d/`. This is the standard practice for managing multiple sites.
 
 ## Configure Reverse Proxy
 
@@ -242,12 +230,11 @@ server {
 }
 ```
 
-:::caution Important
-Replace the following placeholders with **private IP addresses** of the backend servers:
-- `<AUTH-SERVER-IP>` — Auth Service server
-- `<PORTFOLIO-SERVER-IP>` — Portfolio Service server
-- `<ANALYTICS-SERVER-IP>` — Analytics Service server
-:::
+> **Important**
+> Replace the following placeholders with **private IP addresses** of the backend servers:
+> - `<AUTH-SERVER-IP>` — Auth Service server
+> - `<PORTFOLIO-SERVER-IP>` — Portfolio Service server
+> - `<ANALYTICS-SERVER-IP>` — Analytics Service server
 
 Remove the default Nginx server config to avoid conflicts.
 
@@ -255,9 +242,8 @@ Remove the default Nginx server config to avoid conflicts.
 rm -f /etc/nginx/conf.d/default.conf
 ```
 
-:::info
-**Why reverse proxy?** The browser sends all API requests to the **same origin** (the Nginx server). Nginx then routes them to the correct backend based on the URL path. This avoids CORS issues and means the frontend doesn't need to know backend server IPs at build time.
-:::
+> **Note**
+> **Why reverse proxy?** The browser sends all API requests to the **same origin** (the Nginx server). Nginx then routes them to the correct backend based on the URL path. This avoids CORS issues and means the frontend doesn't need to know backend server IPs at build time.
 
 ## Validate & Restart
 
@@ -267,9 +253,8 @@ Always test the Nginx configuration before restarting.
 nginx -t
 ```
 
-:::tip Hint
-**If `nginx -t` shows errors, check your config for typos or missing semicolons. The error message will include the line number.**
-:::
+> **Hint**
+> **If `nginx -t` shows errors, check your config for typos or missing semicolons. The error message will include the line number.**
 
 Restart Nginx to load the new configuration.
 
@@ -281,9 +266,8 @@ systemctl restart nginx
 
 Access `http://<FRONTEND-SERVER-PUBLIC-IP>` in your browser.
 
-:::info
-You should see the WMP login page. However, if you try to register or login, it will **fail** because the backend services are not running yet. This is expected — we will set them up in the following steps.
-:::
+> **Note**
+> You should see the WMP login page. However, if you try to register or login, it will **fail** because the backend services are not running yet. This is expected — we will set them up in the following steps.
 
 Check the Nginx health endpoint.
 

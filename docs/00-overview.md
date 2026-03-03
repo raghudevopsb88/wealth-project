@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # 00-Overview
 
 Wealth Management Platform (WMP) is a microservices-based web application for managing investment portfolios. It consists of 5 components deployed across 5 servers.
@@ -64,10 +60,8 @@ We start with **Frontend first** to demonstrate that the web page loads but no f
 4. **Auth Service** — Depends on PostgreSQL + Portfolio Service
 5. **Analytics Service** — Depends on PostgreSQL
 
-:::caution Important
-Note down the **private IP address** of each server after creation. Backend services communicate using private IPs. The Frontend server's Nginx reverse proxy uses these private IPs to route API requests.
-:::
+> **Important**
+> Note down the **private IP address** of each server after creation. Backend services communicate using private IPs. The Frontend server's Nginx reverse proxy uses these private IPs to route API requests.
 
-:::info
-After setting up Frontend (Step 1), open it in the browser — you will see the login page but registration/login will fail. As you set up each backend service, functionality will progressively start working.
-:::
+> **Note**
+> After setting up Frontend (Step 1), open it in the browser — you will see the login page but registration/login will fail. As you set up each backend service, functionality will progressively start working.

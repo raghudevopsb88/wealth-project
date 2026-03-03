@@ -1,24 +1,17 @@
----
-sidebar_position: 4
----
-
 # 03-Portfolio Service
 
 Portfolio Service is the core microservice responsible for managing users, portfolios, and holdings. It is built with **Java 21** and **Spring Boot**, using **Gradle** as the build tool.
 
-:::tip Hint
-**Developer has chosen Java 21 with Spring Boot. We use OpenJDK 21 which is available in the RHEL 9 AppStream repository.**
-:::
+> **Hint**
+> **Developer has chosen Java 21 with Spring Boot. We use OpenJDK 21 which is available in the RHEL 9 AppStream repository.**
 
-:::caution Dependency
-Portfolio Service depends on **PostgreSQL**. Ensure PostgreSQL is set up and running before starting this service.
-:::
+> **Dependency**
+> Portfolio Service depends on **PostgreSQL**. Ensure PostgreSQL is set up and running before starting this service.
 
 ## Install Java 21
 
-:::info
-We install the full JDK (`-devel`) because we need to build the application from source on this server using Gradle. Amazon Corretto is **not** available in default RHEL repos — use `java-21-openjdk-devel` instead.
-:::
+> **Note**
+> We install the full JDK (`-devel`) because we need to build the application from source on this server using Gradle. Amazon Corretto is **not** available in default RHEL repos — use `java-21-openjdk-devel` instead.
 
 ```shell
 dnf install -y java-21-openjdk-devel
@@ -32,9 +25,8 @@ java -version
 
 ## Configure the Application
 
-:::caution Recap
-Applications should run as a non-root user for security.
-:::
+> **Recap**
+> Applications should run as a non-root user for security.
 
 Add application user.
 
@@ -42,9 +34,8 @@ Add application user.
 useradd -r -s /bin/false appuser
 ```
 
-:::info
-User **appuser** is a system / daemon user to run the application. We don't use this user to login to the server.
-:::
+> **Note**
+> User **appuser** is a system / daemon user to run the application. We don't use this user to login to the server.
 
 Create the application directory.
 
@@ -73,9 +64,8 @@ chmod +x gradlew
 ./gradlew bootJar --no-daemon -x test
 ```
 
-:::tip Hint
-**The `-x test` flag skips tests during build to save time. The built JAR will be in `build/libs/` directory. The first build takes a few minutes as Gradle downloads dependencies.**
-:::
+> **Hint**
+> **The `-x test` flag skips tests during build to save time. The built JAR will be in `build/libs/` directory. The first build takes a few minutes as Gradle downloads dependencies.**
 
 Copy the built JAR to the application directory.
 
@@ -88,9 +78,8 @@ chown appuser:appuser /opt/portfolio-service/app.jar
 
 We need to set up a new service in **systemd** so `systemctl` can manage this service.
 
-:::info
-You can create this file using **`vim /etc/systemd/system/portfolio-service.service`**
-:::
+> **Note**
+> You can create this file using **`vim /etc/systemd/system/portfolio-service.service`**
 
 ```ini title=/etc/systemd/system/portfolio-service.service
 [Unit]
@@ -116,9 +105,8 @@ Environment=SERVER_PORT=8080
 WantedBy=multi-user.target
 ```
 
-:::caution Important
-Replace `<POSTGRESQL-SERVER-IP>` with the **private IP address** of your PostgreSQL server.
-:::
+> **Important**
+> Replace `<POSTGRESQL-SERVER-IP>` with the **private IP address** of your PostgreSQL server.
 
 Load the service.
 
@@ -126,9 +114,8 @@ Load the service.
 systemctl daemon-reload
 ```
 
-:::info
-This above command is because we added a new service. We are telling systemd to reload so it will detect the new service.
-:::
+> **Note**
+> This above command is because we added a new service. We are telling systemd to reload so it will detect the new service.
 
 Start the service.
 
@@ -137,14 +124,13 @@ systemctl enable portfolio-service
 systemctl start portfolio-service
 ```
 
-:::caution Re-deployment Note
-If you are re-deploying (updating the JAR), you must **stop the service first** before copying the new JAR, then start it again:
-```shell
-systemctl stop portfolio-service
-cp /tmp/portfolio-service/build/libs/*.jar /opt/portfolio-service/app.jar
-systemctl start portfolio-service
-```
-:::
+> **Re-deployment Note**
+> If you are re-deploying (updating the JAR), you must **stop the service first** before copying the new JAR, then start it again:
+> ```shell
+> systemctl stop portfolio-service
+> cp /tmp/portfolio-service/build/libs/*.jar /opt/portfolio-service/app.jar
+> systemctl start portfolio-service
+> ```
 
 ## Verification
 
@@ -160,9 +146,8 @@ Check the application logs if needed.
 journalctl -u portfolio-service -f
 ```
 
-:::tip Hint
-**The Portfolio Service takes about 30-40 seconds to start up because Spring Boot needs to initialize and run Flyway database migrations.**
-:::
+> **Hint**
+> **The Portfolio Service takes about 30-40 seconds to start up because Spring Boot needs to initialize and run Flyway database migrations.**
 
 Verify the health endpoint is responding.
 
@@ -176,6 +161,5 @@ Expected response:
 {"status":"UP"}
 ```
 
-:::info
-After this service is running, go back to the **Frontend** browser and try again — API calls to `/api/v1/portfolios/` and `/api/v1/users/` should now be proxied correctly (though auth will still fail until Auth Service is set up).
-:::
+> **Note**
+> After this service is running, go back to the **Frontend** browser and try again — API calls to `/api/v1/portfolios/` and `/api/v1/users/` should now be proxied correctly (though auth will still fail until Auth Service is set up).

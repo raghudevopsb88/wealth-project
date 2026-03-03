@@ -1,18 +1,12 @@
----
-sidebar_position: 5
----
-
 # 04-Auth Service
 
 Auth Service handles user registration and login. It issues JWT tokens that are validated by other services. It is built with **Go** using the **chi** router.
 
-:::tip Hint
-**Developer has chosen Golang. This service generates JWTs that are compatible with the Java Portfolio Service — both use the same HS256 secret.**
-:::
+> **Hint**
+> **Developer has chosen Golang. This service generates JWTs that are compatible with the Java Portfolio Service — both use the same HS256 secret.**
 
-:::caution Dependency
-Auth Service depends on **PostgreSQL** and **Portfolio Service**. Ensure both are running before setting up this service. During user registration, Auth Service makes a sync REST call to Portfolio Service to create the user record and seed a starter portfolio.
-:::
+> **Dependency**
+> Auth Service depends on **PostgreSQL** and **Portfolio Service**. Ensure both are running before setting up this service. During user registration, Auth Service makes a sync REST call to Portfolio Service to create the user record and seed a starter portfolio.
 
 ## Install Go
 
@@ -60,9 +54,8 @@ cd /tmp/auth-service
 CGO_ENABLED=0 go build -o auth-service ./cmd/server
 ```
 
-:::tip Hint
-**`CGO_ENABLED=0` produces a statically-linked binary with no external C dependencies. The first build takes a minute as Go downloads module dependencies. Subsequent builds are much faster.**
-:::
+> **Hint**
+> **`CGO_ENABLED=0` produces a statically-linked binary with no external C dependencies. The first build takes a minute as Go downloads module dependencies. Subsequent builds are much faster.**
 
 Copy the binary to the application directory.
 
@@ -74,9 +67,8 @@ chown appuser:appuser /opt/auth-service/auth-service
 
 ## Setup SystemD Service
 
-:::info
-You can create this file using **`vim /etc/systemd/system/auth-service.service`**
-:::
+> **Note**
+> You can create this file using **`vim /etc/systemd/system/auth-service.service`**
 
 ```ini title=/etc/systemd/system/auth-service.service
 [Unit]
@@ -105,13 +97,12 @@ Environment=PORTFOLIO_SERVICE_URL=http://<PORTFOLIO-SERVER-IP>:8080
 WantedBy=multi-user.target
 ```
 
-:::caution Important
-Replace the following placeholders:
-- `<POSTGRESQL-SERVER-IP>` — Private IP of the PostgreSQL server
-- `<PORTFOLIO-SERVER-IP>` — Private IP of the Portfolio Service server
-
-The `JWT_SECRET` must be the **same value** used in Portfolio Service for token validation to work across services.
-:::
+> **Important**
+> Replace the following placeholders:
+> - `<POSTGRESQL-SERVER-IP>` — Private IP of the PostgreSQL server
+> - `<PORTFOLIO-SERVER-IP>` — Private IP of the Portfolio Service server
+>
+> The `JWT_SECRET` must be the **same value** used in Portfolio Service for token validation to work across services.
 
 Load the service.
 
@@ -126,14 +117,13 @@ systemctl enable auth-service
 systemctl start auth-service
 ```
 
-:::caution Re-deployment Note
-If you are re-deploying (updating the binary), you must **stop the service first** before copying — otherwise you'll get a "Text file busy" error:
-```shell
-systemctl stop auth-service
-cp /tmp/auth-service/auth-service /opt/auth-service/auth-service
-systemctl start auth-service
-```
-:::
+> **Re-deployment Note**
+> If you are re-deploying (updating the binary), you must **stop the service first** before copying — otherwise you'll get a "Text file busy" error:
+> ```shell
+> systemctl stop auth-service
+> cp /tmp/auth-service/auth-service /opt/auth-service/auth-service
+> systemctl start auth-service
+> ```
 
 ## Verification
 
@@ -149,9 +139,8 @@ Check the application logs.
 journalctl -u auth-service -f
 ```
 
-:::tip Hint
-**Auth Service starts up very fast (under 2 seconds) since Go binaries are pre-compiled.**
-:::
+> **Hint**
+> **Auth Service starts up very fast (under 2 seconds) since Go binaries are pre-compiled.**
 
 Verify the health endpoint.
 
@@ -173,6 +162,5 @@ curl -X POST http://localhost:8081/api/v1/auth/register \
   -d '{"email":"test@example.com","password":"password123","fullName":"Test User"}'
 ```
 
-:::info
-After this service is running, go back to the **Frontend** browser — you should now be able to **register** and **login**. The dashboard will load and show portfolio data.
-:::
+> **Note**
+> After this service is running, go back to the **Frontend** browser — you should now be able to **register** and **login**. The dashboard will load and show portfolio data.
