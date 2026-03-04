@@ -81,7 +81,7 @@ vim /var/lib/pgsql/16/data/pg_hba.conf
 Add the following line **at the end** of the file.
 
 ```text title=/var/lib/pgsql/16/data/pg_hba.conf
-host    all    all    0.0.0.0/0    md5
+host    all    all    0.0.0.0/0    scram-sha-256
 ```
 
 Also change the local authentication method from `peer` to `trust` so we can run the setup SQL.
@@ -99,7 +99,7 @@ local   all             all                                     trust
 ```
 
 > **Note**
-> `md5` means remote clients must provide a password. `trust` for local connections lets us run `psql` as the `postgres` user without a password prompt. In production, restrict `0.0.0.0/0` to your VPC CIDR range.
+> `scram-sha-256` means remote clients must authenticate with a password. `trust` for local connections lets us run `psql` as the `postgres` user without a password prompt. In production, restrict `0.0.0.0/0` to your VPC CIDR range.
 
 Restart PostgreSQL to apply the changes.
 
