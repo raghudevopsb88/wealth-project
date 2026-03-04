@@ -58,6 +58,7 @@ Set ownership.
 
 ```shell
 chown -R appuser:appuser /app
+chmod o-rwx /app -R
 ```
 
 ## Setup SystemD Service

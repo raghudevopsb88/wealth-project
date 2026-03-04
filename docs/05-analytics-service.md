@@ -53,6 +53,7 @@ Install the Python dependencies and set ownership.
 cd /app
 pip3.12 install --no-cache-dir .
 chown -R appuser:appuser /app
+chmod o-rwx /app -R
 ```
 
 > **Hint**

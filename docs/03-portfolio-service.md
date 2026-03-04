@@ -69,6 +69,7 @@ Copy the built JAR and set ownership.
 ```shell
 cp /app/build/libs/*.jar /app/app.jar
 chown -R appuser:appuser /app
+chmod o-rwx /app -R
 ```
 
 ## Setup SystemD Service
