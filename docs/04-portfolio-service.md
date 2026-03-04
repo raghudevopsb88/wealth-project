@@ -67,7 +67,7 @@ chmod +x gradlew
 Copy the built JAR and set ownership.
 
 ```shell
-cp /app/build/libs/*.jar /app/app.jar
+cp /app/build/libs/*.jar /app/portfolio-service.jar
 chown -R appuser:appuser /app
 chmod o-rwx /app -R
 ```
@@ -88,7 +88,7 @@ After=network.target
 Type=simple
 User=appuser
 WorkingDirectory=/app
-ExecStart=/usr/bin/java -jar app.jar
+ExecStart=/usr/bin/java -jar portfolio-service.jar
 Restart=on-failure
 RestartSec=10
 
@@ -128,7 +128,7 @@ systemctl start portfolio-service
 > systemctl stop portfolio-service
 > cd /app && tar xzf /tmp/portfolio-service.tar.gz
 > chmod +x gradlew && ./gradlew bootJar --no-daemon -x test
-> cp /app/build/libs/*.jar /app/app.jar
+> cp /app/build/libs/*.jar /app/portfolio-service.jar
 > systemctl start portfolio-service
 > ```
 
