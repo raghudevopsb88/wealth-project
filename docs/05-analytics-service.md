@@ -40,20 +40,12 @@ chown appuser:appuser /app
 
 ## Download & Install
 
-Download the application source code to a temporary directory.
+Download and extract the application source code directly to the application directory.
 
 ```shell
 curl -L -o /tmp/analytics-service.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/analytics-service.tar.gz
-mkdir -p /tmp/analytics-service
-cd /tmp/analytics-service
+cd /app
 tar xzf /tmp/analytics-service.tar.gz
-```
-
-
-Copy the source to the application directory.
-
-```shell
-cp -r /tmp/analytics-service/* /app/
 chown -R appuser:appuser /app
 ```
 
@@ -124,7 +116,7 @@ systemctl start analytics-service
 > If you are re-deploying, stop the service before updating:
 > ```shell
 > systemctl stop analytics-service
-> cp -r /tmp/analytics-service/* /app/
+> cd /app && tar xzf /tmp/analytics-service.tar.gz
 > pip3.12 install --no-cache-dir .
 > systemctl start analytics-service
 > ```

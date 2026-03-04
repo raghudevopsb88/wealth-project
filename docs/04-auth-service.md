@@ -37,30 +37,27 @@ chown appuser:appuser /app
 
 ## Download & Build
 
-Download the application source code to a temporary directory.
+Download and extract the application source code directly to the application directory.
 
 ```shell
 curl -L -o /tmp/auth-service.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/auth-service.tar.gz
-mkdir -p /tmp/auth-service
-cd /tmp/auth-service
+cd /app
 tar xzf /tmp/auth-service.tar.gz
 ```
-
 
 Build the Go binary.
 
 ```shell
-cd /tmp/auth-service
+cd /app
 CGO_ENABLED=0 go build -o auth-service ./cmd/server
 ```
 
 > **Hint**
 > **`CGO_ENABLED=0` produces a statically-linked binary with no external C dependencies. The first build takes a minute as Go downloads module dependencies. Subsequent builds are much faster.**
 
-Copy the binary to the application directory.
+Set permissions on the binary.
 
 ```shell
-cp /tmp/auth-service/auth-service /app/auth-service
 chmod +x /app/auth-service
 chown appuser:appuser /app/auth-service
 ```
@@ -121,7 +118,8 @@ systemctl start auth-service
 > If you are re-deploying (updating the binary), you must **stop the service first** before copying — otherwise you'll get a "Text file busy" error:
 > ```shell
 > systemctl stop auth-service
-> cp /tmp/auth-service/auth-service /app/auth-service
+> cd /app && tar xzf /tmp/auth-service.tar.gz
+> CGO_ENABLED=0 go build -o auth-service ./cmd/server
 > systemctl start auth-service
 > ```
 

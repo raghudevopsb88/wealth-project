@@ -46,20 +46,18 @@ chown appuser:appuser /app
 
 ## Download & Build
 
-Download the application source code to a temporary directory.
+Download and extract the application source code directly to the application directory.
 
 ```shell
 curl -L -o /tmp/portfolio-service.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/portfolio-service.tar.gz
-mkdir -p /tmp/portfolio-service
-cd /tmp/portfolio-service
+cd /app
 tar xzf /tmp/portfolio-service.tar.gz
 ```
-
 
 Build the application using Gradle.
 
 ```shell
-cd /tmp/portfolio-service
+cd /app
 chmod +x gradlew
 ./gradlew bootJar --no-daemon -x test
 ```
@@ -67,10 +65,10 @@ chmod +x gradlew
 > **Hint**
 > **The `-x test` flag skips tests during build to save time. The built JAR will be in `build/libs/` directory. The first build takes a few minutes as Gradle downloads dependencies.**
 
-Copy the built JAR to the application directory.
+Copy the built JAR and set permissions.
 
 ```shell
-cp /tmp/portfolio-service/build/libs/*.jar /app/app.jar
+cp /app/build/libs/*.jar /app/app.jar
 chown appuser:appuser /app/app.jar
 ```
 
@@ -128,7 +126,9 @@ systemctl start portfolio-service
 > If you are re-deploying (updating the JAR), you must **stop the service first** before copying the new JAR, then start it again:
 > ```shell
 > systemctl stop portfolio-service
-> cp /tmp/portfolio-service/build/libs/*.jar /app/app.jar
+> cd /app && tar xzf /tmp/portfolio-service.tar.gz
+> chmod +x gradlew && ./gradlew bootJar --no-daemon -x test
+> cp /app/build/libs/*.jar /app/app.jar
 > systemctl start portfolio-service
 > ```
 
