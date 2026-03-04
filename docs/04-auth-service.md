@@ -54,11 +54,10 @@ CGO_ENABLED=0 go build -o auth-service ./cmd/server
 > **Hint**
 > **`CGO_ENABLED=0` produces a statically-linked binary with no external C dependencies. The first build takes a minute as Go downloads module dependencies. Subsequent builds are much faster.**
 
-Set ownership and permissions.
+Set ownership.
 
 ```shell
 chown -R appuser:appuser /app
-chmod +x /app/auth-service
 ```
 
 ## Setup SystemD Service
