@@ -34,8 +34,8 @@ useradd -r -s /bin/false appuser
 Create the application directory.
 
 ```shell
-mkdir -p /opt/analytics-service
-chown appuser:appuser /opt/analytics-service
+mkdir -p /app
+chown appuser:appuser /app
 ```
 
 ## Download & Install
@@ -53,14 +53,14 @@ tar xzf /tmp/analytics-service.tar.gz
 Copy the source to the application directory.
 
 ```shell
-cp -r /tmp/analytics-service/* /opt/analytics-service/
-chown -R appuser:appuser /opt/analytics-service
+cp -r /tmp/analytics-service/* /app/
+chown -R appuser:appuser /app
 ```
 
 Install the Python dependencies.
 
 ```shell
-cd /opt/analytics-service
+cd /app
 pip3.12 install --no-cache-dir .
 ```
 
@@ -88,7 +88,7 @@ After=network.target
 [Service]
 Type=simple
 User=appuser
-WorkingDirectory=/opt/analytics-service
+WorkingDirectory=/app
 ExecStart=/usr/local/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 Restart=on-failure
 RestartSec=10
@@ -124,7 +124,7 @@ systemctl start analytics-service
 > If you are re-deploying, stop the service before updating:
 > ```shell
 > systemctl stop analytics-service
-> cp -r /tmp/analytics-service/* /opt/analytics-service/
+> cp -r /tmp/analytics-service/* /app/
 > pip3.12 install --no-cache-dir .
 > systemctl start analytics-service
 > ```

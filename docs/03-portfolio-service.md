@@ -40,8 +40,8 @@ useradd -r -s /bin/false appuser
 Create the application directory.
 
 ```shell
-mkdir -p /opt/portfolio-service
-chown appuser:appuser /opt/portfolio-service
+mkdir -p /app
+chown appuser:appuser /app
 ```
 
 ## Download & Build
@@ -70,8 +70,8 @@ chmod +x gradlew
 Copy the built JAR to the application directory.
 
 ```shell
-cp /tmp/portfolio-service/build/libs/*.jar /opt/portfolio-service/app.jar
-chown appuser:appuser /opt/portfolio-service/app.jar
+cp /tmp/portfolio-service/build/libs/*.jar /app/app.jar
+chown appuser:appuser /app/app.jar
 ```
 
 ## Setup SystemD Service
@@ -89,7 +89,7 @@ After=network.target
 [Service]
 Type=simple
 User=appuser
-WorkingDirectory=/opt/portfolio-service
+WorkingDirectory=/app
 ExecStart=/usr/bin/java -jar app.jar
 Restart=on-failure
 RestartSec=10
@@ -128,7 +128,7 @@ systemctl start portfolio-service
 > If you are re-deploying (updating the JAR), you must **stop the service first** before copying the new JAR, then start it again:
 > ```shell
 > systemctl stop portfolio-service
-> cp /tmp/portfolio-service/build/libs/*.jar /opt/portfolio-service/app.jar
+> cp /tmp/portfolio-service/build/libs/*.jar /app/app.jar
 > systemctl start portfolio-service
 > ```
 

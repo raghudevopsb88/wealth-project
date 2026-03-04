@@ -31,8 +31,8 @@ useradd -r -s /bin/false appuser
 Create the application directory.
 
 ```shell
-mkdir -p /opt/auth-service
-chown appuser:appuser /opt/auth-service
+mkdir -p /app
+chown appuser:appuser /app
 ```
 
 ## Download & Build
@@ -60,9 +60,9 @@ CGO_ENABLED=0 go build -o auth-service ./cmd/server
 Copy the binary to the application directory.
 
 ```shell
-cp /tmp/auth-service/auth-service /opt/auth-service/auth-service
-chmod +x /opt/auth-service/auth-service
-chown appuser:appuser /opt/auth-service/auth-service
+cp /tmp/auth-service/auth-service /app/auth-service
+chmod +x /app/auth-service
+chown appuser:appuser /app/auth-service
 ```
 
 ## Setup SystemD Service
@@ -78,8 +78,8 @@ After=network.target
 [Service]
 Type=simple
 User=appuser
-WorkingDirectory=/opt/auth-service
-ExecStart=/opt/auth-service/auth-service
+WorkingDirectory=/app
+ExecStart=/app/auth-service
 Restart=on-failure
 RestartSec=10
 
@@ -121,7 +121,7 @@ systemctl start auth-service
 > If you are re-deploying (updating the binary), you must **stop the service first** before copying — otherwise you'll get a "Text file busy" error:
 > ```shell
 > systemctl stop auth-service
-> cp /tmp/auth-service/auth-service /opt/auth-service/auth-service
+> cp /tmp/auth-service/auth-service /app/auth-service
 > systemctl start auth-service
 > ```
 
