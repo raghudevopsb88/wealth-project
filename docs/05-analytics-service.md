@@ -35,7 +35,6 @@ Create the application directory.
 
 ```shell
 mkdir -p /app
-chown appuser:appuser /app
 ```
 
 ## Download & Install
@@ -46,14 +45,14 @@ Download and extract the application source code directly to the application dir
 curl -L -o /tmp/analytics-service.tar.gz https://raw.githubusercontent.com/raghudevopsb88/wealth-project/main/artifacts/analytics-service.tar.gz
 cd /app
 tar xzf /tmp/analytics-service.tar.gz
-chown -R appuser:appuser /app
 ```
 
-Install the Python dependencies.
+Install the Python dependencies and set ownership.
 
 ```shell
 cd /app
 pip3.12 install --no-cache-dir .
+chown -R appuser:appuser /app
 ```
 
 > **Hint**

@@ -32,7 +32,6 @@ Create the application directory.
 
 ```shell
 mkdir -p /app
-chown appuser:appuser /app
 ```
 
 ## Download & Build
@@ -55,11 +54,11 @@ CGO_ENABLED=0 go build -o auth-service ./cmd/server
 > **Hint**
 > **`CGO_ENABLED=0` produces a statically-linked binary with no external C dependencies. The first build takes a minute as Go downloads module dependencies. Subsequent builds are much faster.**
 
-Set permissions on the binary.
+Set ownership and permissions.
 
 ```shell
+chown -R appuser:appuser /app
 chmod +x /app/auth-service
-chown appuser:appuser /app/auth-service
 ```
 
 ## Setup SystemD Service

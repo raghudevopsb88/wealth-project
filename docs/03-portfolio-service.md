@@ -41,7 +41,6 @@ Create the application directory.
 
 ```shell
 mkdir -p /app
-chown appuser:appuser /app
 ```
 
 ## Download & Build
@@ -65,11 +64,11 @@ chmod +x gradlew
 > **Hint**
 > **The `-x test` flag skips tests during build to save time. The built JAR will be in `build/libs/` directory. The first build takes a few minutes as Gradle downloads dependencies.**
 
-Copy the built JAR and set permissions.
+Copy the built JAR and set ownership.
 
 ```shell
 cp /app/build/libs/*.jar /app/app.jar
-chown appuser:appuser /app/app.jar
+chown -R appuser:appuser /app
 ```
 
 ## Setup SystemD Service
